@@ -430,7 +430,7 @@ class My_Classifier_Model:
             self.catboost_model_paths = paths["catboost"]
             self.xgboost_model_paths = paths["xgboost"]
 
-    def predict(self, test_path: str, output_path: str = "submission.csv"):
+    def predict(self, test_path: str, output_path: str = "./data/results.csv"):
         self.logger.info(f"PREDICT - started test_path={test_path} output_path={output_path}")
         try:
             self._load_artifacts()

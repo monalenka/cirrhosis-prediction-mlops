@@ -6,11 +6,12 @@ __pycache__/
 venv/
 env/
 
-poetry.lock
+# poetry.lock
 
 
-data/
-models/
+data/*
+!data/.gitkeep
+model/
 *.log
 .ipynb_checkpoints/
 *.ipynb
