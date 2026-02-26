@@ -14,10 +14,11 @@ data/*
 model/
 *.log
 .ipynb_checkpoints/
-*.ipynb
+# *.ipynb
 dist/
 build/
 *.egg-info/
 
 .vscode/
 .idea/
+catboost_info/*

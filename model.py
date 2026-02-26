@@ -160,10 +160,6 @@ class My_Classifier_Model:
         for c in self.cat_cols:
             df[c] = df[c].fillna(self.MISSING).astype(str)
 
-        if "Bilirubin" in df.columns and "Albumin" in df.columns:
-            df["Bili_Alb"] = df["Bilirubin"] / (df["Albumin"] + self.eps)
-        if "Alk_Phos" in df.columns and "SGOT" in df.columns:
-            df["Alk_SGOT"] = df["Alk_Phos"] / (df["SGOT"] + self.eps)
         if "Platelets" in df.columns and "Prothrombin" in df.columns:
             df["Plat_Prot"] = df["Platelets"] / (df["Prothrombin"] + self.eps)
 
@@ -189,10 +185,6 @@ class My_Classifier_Model:
             if c in df.columns:
                 df[c] = df[c].fillna(self.MISSING).astype(str)
 
-        if "Bilirubin" in df.columns and "Albumin" in df.columns:
-            df["Bili_Alb"] = df["Bilirubin"] / (df["Albumin"] + self.eps)
-        if "Alk_Phos" in df.columns and "SGOT" in df.columns:
-            df["Alk_SGOT"] = df["Alk_Phos"] / (df["SGOT"] + self.eps)
         if "Platelets" in df.columns and "Prothrombin" in df.columns:
             df["Plat_Prot"] = df["Platelets"] / (df["Prothrombin"] + self.eps)
 
@@ -398,6 +390,9 @@ class My_Classifier_Model:
             with open(os.path.join(self.model_dir, filename), "w") as f:
                 json.dump(data, f, indent=2, default=str)
 
+        with open(os.path.join(self.model_dir, "best_w.json"), "w") as f:
+            json.dump(float(self.best_w), f)
+
         with open(os.path.join(self.model_dir, "label_encoder.pkl"), "wb") as f:
             pickle.dump(self.label_encoder, f)
 
@@ -417,7 +412,7 @@ class My_Classifier_Model:
         with open(os.path.join(self.model_dir, "xgb_feature_names.json"), "r") as f:
             self.xgb_feature_names = json.load(f)
         with open(os.path.join(self.model_dir, "best_w.json"), "r") as f:
-            self.best_w = json.load(f)
+            self.best_w = float(json.load(f))
         with open(os.path.join(self.model_dir, "cat_seeds.json"), "r") as f:
             self.cat_seeds = json.load(f)
         with open(os.path.join(self.model_dir, "xgb_seeds.json"), "r") as f:
