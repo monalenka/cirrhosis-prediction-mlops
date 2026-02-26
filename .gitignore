@@ -21,4 +21,4 @@ build/
 
 .vscode/
 .idea/
-catboost_info/*
+catboost_info/
