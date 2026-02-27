@@ -14,6 +14,7 @@ import logging
 import sys
 from logging.handlers import RotatingFileHandler
 import traceback
+from clearml import Task
 
 def get_logger(name: str = "cirrhosis") -> logging.Logger:
     os.makedirs("data", exist_ok=True)
@@ -237,6 +238,12 @@ class My_Classifier_Model:
         return log_loss(y, oof)
 
     def train(self, train_path: str, test_path: str):
+        task = Task.init(
+        project_name="Cirrhosis Project",
+        task_name="Training run",
+        output_uri=True
+        )
+
         self.logger.info(f"TRAIN - started train_path={train_path} test_path={test_path}")
 
         try:
@@ -245,6 +252,9 @@ class My_Classifier_Model:
             self.logger.info(f"TRAIN - train shape={train_df.shape} test shape={test_df.shape}")
             self.logger.info(f"TRAIN - train columns={list(train_df.columns)}")
             
+            task.upload_artifact("train_dataset", train_df)
+            task.upload_artifact("test_dataset", test_df)
+
             X_train, y_train = self._preprocess_train(train_df)
 
             X_test = self._preprocess_test(test_df)
@@ -271,6 +281,9 @@ class My_Classifier_Model:
                     "task_type": "GPU", 
                     "devices": "0"
                 })
+
+            task.connect(self.best_params, name="Best Params")
+            task.connect({"cat_seeds": self.cat_seeds, "xgb_seeds": self.xgb_seeds})                
 
             self.logger.info("TRAIN - Training CatBoost ensemble...")
             skf = StratifiedKFold(n_splits=self.n_splits, shuffle=True, random_state=self.skf_random_state)
@@ -308,6 +321,8 @@ class My_Classifier_Model:
 
             cat_cv_logloss = log_loss(y_train, cat_oof)
             self.logger.info(f"TRAIN - CatBoost ensemble CV logloss: {cat_cv_logloss:.6f}")
+
+            task.get_logger().report_scalar("CV Log Loss", "CatBoost", value=cat_cv_logloss, iteration=0)
 
             self.logger.info("TRAIN - Preparing data for XGBoost...")
             X_all = pd.concat([X_train, X_test], axis=0).reset_index(drop=True)
@@ -355,6 +370,8 @@ class My_Classifier_Model:
             xgb_cv_logloss = log_loss(y_train, xgb_oof)
             self.logger.info(f"TRAIN - XGBoost ensemble CV logloss: {xgb_cv_logloss:.6f}")
 
+            task.get_logger().report_scalar("CV Log Loss", "XGBoost", value=xgb_cv_logloss, iteration=0)
+
             self.logger.info("TRAIN - Searching for optimal blending weight...")
             weights = np.linspace(0.0, 1.0, 101)
             best_w, best_score = 1.0, 10.0
@@ -369,10 +386,17 @@ class My_Classifier_Model:
             self.logger.info(f"TRAIN - Optimal CatBoost weight: {best_w:.2f}")
             self.logger.info(f"TRAIN - Blending CV logloss: {best_score:.6f}")
 
+            task.get_logger().report_scalar("CV Log Loss", "Blending", value=best_score, iteration=0)
+
             self._save_artifacts()
+
+            task.upload_artifact("model_folder", self.model_dir)
+
             self.logger.info("TRAIN - finished successfully")
         except Exception:
             self.logger.exception("TRAIN - failed with exception")
+            
+            task.mark_failed()
             raise
 
     def _save_artifacts(self):
