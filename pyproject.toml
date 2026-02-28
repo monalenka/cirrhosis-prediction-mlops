@@ -3,21 +3,26 @@ name = "cirrhosis-mlops"
 version = "0.1.0"
 description = "Cirrhosis classification model"
 authors = [
-    {name = "poeeeri",email = "g2007gle@mail.ru"}
+    {name = "poeeeri",email = "g2007gle@mail.ru"},
+    {name = "monalenka", email = "emnorets@yandex.ru"}
 ]
 readme = "README.md"
 requires-python = "^3.10"
 dependencies = [
-    "pandas (>=2.0,<2.3)",
-    "numpy (>=1.24,<2.1)",
-    "scikit-learn (>=1.3,<1.6)",
-    "catboost (>=1.2.10,<2.0.0)",
-    "xgboost (>=2.0,<3.1)",
-    "optuna (>=3.6,<5.0.0)",
-    "clearml (>=1.15.0,<2.0.0)"
+    "pandas>=2.0,<2.3",
+    "numpy>=1.24,<2.1",
+    "scikit-learn>=1.3,<1.6",
+    "catboost>=1.2.10,<2.0.0",
+    "xgboost>=2.0,<3.1",
+    "optuna>=3.6,<5.0.0",
+    "clearml>=1.15.0,<2.0.0"
 ]
-
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[[tool.poetry.source]]
+name = "tsinghua"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
+priority = "explicit"
