@@ -1,0 +1,24 @@
+__pycache__/
+*.py[cod]
+*.so
+.Python
+.venv/
+venv/
+env/
+
+# poetry.lock
+
+
+data/*
+!data/.gitkeep
+model/
+*.log
+.ipynb_checkpoints/
+# *.ipynb
+dist/
+build/
+*.egg-info/
+
+.vscode/
+.idea/
+catboost_info/

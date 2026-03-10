@@ -1,0 +1,5 @@
+defaults:
+  - clearml: enabled
+  - _self_
+
+project_name: "Cirrhosis Project"
